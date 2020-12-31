@@ -3,13 +3,17 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible"
+        content="ie=edge">
   <title>FRP: Ejercicios básicos</title>
 
   <head>
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+          rel="stylesheet">
 
     <style>
       body {
@@ -39,34 +43,37 @@
   </head>
 
 <body>
-  <div class="main-title">
-    <h1>FRP: Ejercicios básicos</h1>
-    <img class="logo"
-      src="https://user-images.githubusercontent.com/10064416/53419310-eb4eb080-39d9-11e9-92f0-f402f33fe4fd.jpg" />
-  </div>
+<div class="main-title">
+  <h1>FRP: Ejercicios básicos</h1>
+  <img class="logo"
+       src="https://user-images.githubusercontent.com/10064416/53419310-eb4eb080-39d9-11e9-92f0-f402f33fe4fd.jpg"/>
+</div>
 
-  <h3>Simulador de lanzamientos de dado</h3>
+<h3>Simulador de lanzamientos de dado</h3>
 
-  <p>Experimentaremos con la FRP y algunos de los operadores, para familiarizarnos con la notación y este nuevo tipo de
-    programación.</p>
-  <h4>Se precisa:</h4>
+<p>Experimentaremos con la FRP y algunos de los operadores, para familiarizarnos con la notación y este nuevo tipo de
+   programación.</p>
+<h4>Se precisa:</h4>
 
-  <ul>
-    <li>Generar un stream que, cada 2 segundos, simule un lanzamiento de un dado</li>
-    <li>Contar los lanzamientos que vamos haciendo</li>
-    <li>Calcular cuantas veces sale cada cara del dado</li>
-    <li>Sacar un mensaje por consola cada vez que un valor se repita en tiradas consecutivas</li>
-    <li>Calcular la porbabilidad de ocurrencia de cada cara del dado, a partir del número de lanzamientos</li>
-  </ul>
+<ul>
+  <li>Generar un stream que, cada 2 segundos, simule un lanzamiento de un dado</li>
+  <li>Contar los lanzamientos que vamos haciendo</li>
+  <li>Sacar un mensaje por consola cada vez que un valor se repita en tiradas consecutivas</li>
+  <li>Calcular cuantas veces sale cada cara del dado</li>
+  <li>Calcular la probabilidad de ocurrencia de cada cara del dado, a partir del número de lanzamientos, es decir:
+    <br>
+      Si hemos lanzado el dado 5 veces y ha salido el 2 tres veces, el 1 una vez y el 5 una vez, la probabilidad de ocurrencia es {2: 60%, 1: 20%, 5: 20%}
+  </li>
+</ul>
 
-  <h4>Ejercicios extra:</h4>
-  <ul>
-    <li>¿Salen más valores pares o impares?</li>
-    <li>Tirar 10 veces los dados y mirar si hemos conseguido una puntuación superior a 50 puntos</li>
-    <li>¿Cuántas tiradas necesitamos para superar los 100 puntos?</li>
-  </ul>
+<h4>Ejercicios extra:</h4>
+<ul>
+  <li>¿Salen más valores pares o impares?</li>
+  <li>Tirar 10 veces los dados y mirar si hemos conseguido una puntuación superior a 50 puntos</li>
+  <li>¿Cuántas tiradas necesitamos para superar los 100 puntos?</li>
+</ul>
 
-  <script src="/dist/bundle.js"></script>
+<script src="/dist/bundle.js"></script>
 </body>
 
 </html>

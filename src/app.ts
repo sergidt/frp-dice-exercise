@@ -1,53 +1,76 @@
-import { BehaviorSubject, combineLatest, defer, fromEvent, interval, merge, Observable, of, Subject, timer } from 'rxjs';
-import { count, delay, distinctUntilChanged, filter, map, mapTo, pairwise, refCount, scan, shareReplay, startWith, switchMap, take, takeWhile, tap, withLatestFrom } from 'rxjs/operators';
+import { defer, interval, Observable, of } from 'rxjs';
+import { pairwise, scan, shareReplay, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 console.clear();
 
+// Generador aleatorio de un valor entre dos valores
 const intFrom = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 
+// Generador aleatorio de una cara del dado
+const generaCaraDado$ = defer(() => of(intFrom(1, 6)));
+
+/** Generar un stream que, cada 2 segundos, simule un lanzamiento de un dado **/
 const lanzamientoDado$ = interval(2000)
     .pipe(
-        switchMap(() => defer(() => of(intFrom(1, 6)))),
-        tap(_ => console.log(`lanzamiento actual: ${_}`)),
+        switchMap(() => generaCaraDado$),
+        tap(_ => console.log(`lanzamiento actual: ${ _ }`)),
         shareReplay({ refCount: true })
     );
 
-const contadorLanzamientos$ = lanzamientoDado$
-    .pipe(scan((total, _) => total + 1, 0));
+/** Contar los lanzamientos que vamos haciendo **/
 
-contadorLanzamientos$
-    .subscribe(_ => console.log('número de lanzamientos:', _));
+const contadorLanzamientos$ = lanzamientoDado$.pipe(scan((total, _) => total + 1, 0));
+
+contadorLanzamientos$.subscribe(_ => console.log('número de lanzamientos:', _));
+
+/** Sacar un mensaje por consola cada vez que un valor se repita en tiradas consecutivas **/
 
 lanzamientoDado$
-    .pipe(
-        pairwise()
-    )
+    .pipe(pairwise())
     .subscribe(([anterior, actual]) => {
         if (anterior === actual)
-            console.log(`%crepetición de lanzamiento: ${actual}`, 'background: #222222; color: #bada55')
+            console.log(`%crepetición de lanzamiento: ${ actual }`, 'background: #222222; color: #bada55');
     });
 
-    type AccumuladorValores = {
-        [key in string]?: number;
-    }
+/** Calcular cuantas veces sale cada cara del dado **/
 
-const accumuladorValores$: Observable<AccumuladorValores> =
-    lanzamientoDado$
-        .pipe(
-            scan((lanzamientos, lanzamientoActual) => {
-                const contador = lanzamientos[lanzamientoActual] || 0;
-                return { ...lanzamientos, [lanzamientoActual]: contador + 1 };
-            }, {})
-        );
-
-accumuladorValores$
-    .subscribe(_ => console.log('valores: ', _));
-
-
-function ocurrencias([valores, lanzamientos]: [AccumuladorValores, number]): Array<any> {
-return Object.entries(valores).map(([key, value]) => `${key}: ${((value / lanzamientos) * 100).toFixed(2)}%`);
+type AccumuladorValores = {
+    [key in string]?: number;
 }
 
-accumuladorValores$.pipe(withLatestFrom(contadorLanzamientos$))
-.subscribe(_ => console.log(ocurrencias(_).join('\n')));
+const accumuladorValores$: Observable<AccumuladorValores> = lanzamientoDado$
+    .pipe(
+        scan((lanzamientos, lanzamientoActual) => {
+            const contador = lanzamientos[lanzamientoActual] || 0;
+            return { ...lanzamientos, [lanzamientoActual]: contador + 1 };
+        }, {})
+    );
 
+accumuladorValores$.subscribe(_ => console.log('valores: ', _));
+
+/** Calcular la probabilidad de ocurrencia **/
+
+function ocurrencias([valores, lanzamientos]: [AccumuladorValores, number]): Array<any> {
+    return Object.entries(valores)
+                 .map(([key, value]) => `${ key }: ${ ((value / lanzamientos) * 100).toFixed(2) }%`);
+}
+
+accumuladorValores$
+    .pipe(withLatestFrom(contadorLanzamientos$))
+    .subscribe(_ => console.log(ocurrencias(_).join('\n')));
+
+/** ¿Salen más valores pares o impares? **/
+
+accumuladorValores$
+    .pipe(
+        scan((acc: AccumuladorValores, cur: AccumuladorValores) => {
+            const entries: Array<[string, number]> = Object.entries(cur);
+            const evenNumbers: Array<[string, number]> = entries.filter(([key]) => +key % 2 === 0);
+            const oddNumbers: Array<[string, number]> = entries.filter(([key]) => +key % 2 !== 0);
+            return {
+                even: evenNumbers.map(([, value]) => value).reduce((acc, cur) => acc + cur, 0),
+                odd: oddNumbers.map(([, value]) => value).reduce((acc, cur) => acc + cur, 0)
+            };
+        }, {})
+    )
+    .subscribe(console.log);
