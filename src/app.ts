@@ -9,6 +9,8 @@ const intFrom = (min: number, max: number) => Math.floor(Math.random() * (max - 
 // Generador aleatorio de una cara del dado
 const generaCaraDado$ = defer(() => of(intFrom(1, 6)));
 
+/** RESOLUCIÓN DE LOS EJERCICIOS */
+
 /** Generar un stream que, cada 2 segundos, simule un lanzamiento de un dado **/
 const lanzamientoDado$ = interval(2000)
     .pipe(
