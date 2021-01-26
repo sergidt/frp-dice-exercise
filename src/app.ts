@@ -1,5 +1,5 @@
 import { defer, interval, Observable, of } from 'rxjs';
-import { map, pairwise, scan, shareReplay, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { first, map, pairwise, scan, shareReplay, skipWhile, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 console.clear();
 
@@ -36,7 +36,7 @@ contadorDeLanzamientos$
 /**
  * Sacar un mensaje por consola cada vez que un valor se repita en tiradas consecutivas
  */
-
+/*
 lanzamientoDado$
     .pipe(
         pairwise()
@@ -45,7 +45,7 @@ lanzamientoDado$
         if (anterior === actual)
             console.log('Se ha repetido el valor: ', actual);
     });
-
+*/
 /**
  * Calcular cuantas veces sale cada cara del dado
  */
@@ -64,9 +64,9 @@ const acumuladorDeValores$: Observable<AcumuladorDeValores> = lanzamientoDado$
             };
         }, {})
     );
-
+/*
 acumuladorDeValores$.subscribe(_ => console.log('valores: ', _));
-
+*/
 /**
  * Probabilidad de ocurrencia
  * */
@@ -75,13 +75,13 @@ function ocurrencias([valores, lanzamientos]: [AcumuladorDeValores, number]): Ar
     return Object.entries(valores)
                  .map(([numero, vecesQueHaSalido]: [string, number]) => `${ numero }: ${ ((vecesQueHaSalido / lanzamientos) * 100).toFixed(2) } %`);
 }
-
+/*
 acumuladorDeValores$
     .pipe(
         withLatestFrom(contadorDeLanzamientos$)
     )
     .subscribe(_ => console.log(ocurrencias(_).join('\n')));
-
+*/
 /**
  * ¿Salen más valores pares o impares?
  */
@@ -102,6 +102,7 @@ acumuladorDeValores$
     .subscribe(_ => console.log('pares e impares', _));
  */
 
+/*
 acumuladorDeValores$
     .pipe(
         map((acc: AcumuladorDeValores) => {
@@ -117,3 +118,53 @@ acumuladorDeValores$
         )
     )
     .subscribe(_ => console.log('pares e impares', _));
+*/
+
+/**
+ *  Tirar 10 veces los dados y mirar si hemos conseguido una puntuación superior a 50 puntos
+ */
+/*
+lanzamientoDado$
+    .pipe(
+        scan(
+            (acumulado, lanzamiento) => ({
+                contadorDeLanzamientos: acumulado['contadorDeLanzamientos'] + 1,
+                total: acumulado['total'] + lanzamiento
+            }),
+            {
+                contadorDeLanzamientos: 0, total: 0
+            }
+        ),
+        first(({contadorDeLanzamientos}) => contadorDeLanzamientos < 10),
+    )
+    .subscribe(_ => console.log('Puntuación después de 10 lanzamientos', _));
+*/
+/**
+ *  ¿Cuántas tiradas necesitamos para superar los 100 puntos?
+ */
+
+const lanzarHastaSuperarNPuntos = (puntos: number) => (source$: Observable<number>) => {
+    return   source$
+        .pipe(
+            scan(
+                (acumulado, lanzamiento) => ({
+                    contadorDeLanzamientos: acumulado['contadorDeLanzamientos'] + 1,
+                    total: acumulado['total'] + lanzamiento
+                }),
+                {
+                    contadorDeLanzamientos: 0, total: 0
+                }
+            ),
+            tap(console.log),
+            first(({total}) => total >= puntos),
+            map(({contadorDeLanzamientos}) => contadorDeLanzamientos)
+        );
+
+};
+
+
+lanzamientoDado$
+    .pipe(
+        lanzarHastaSuperarNPuntos(100)
+    )
+    .subscribe(_ => console.log('Número de lanzamientos para superar los 100', _));
